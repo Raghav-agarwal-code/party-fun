@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Party Time! 🎉</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink:   #ff4d8b;
+      --yellow: #ffd93d;
+      --purple: #a855f7;
+      --bg:     #0f0a1e;
+    }
+
+    html, body { height: 100%; width: 100%; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .confetti-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .dot {
+      position: absolute; border-radius: 50%; opacity: 0.15;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh) rotate(0deg);   opacity: 0.2; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0;   }
+    }
+
+    #scene {
+      position: relative;
+      z-index: 10;
+      width: 88vw;
+      max-width: 360px;
+    }
+
+    #main-screen {
+      text-align: center;
+      padding: 2rem 1.5rem 2.5rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 80px rgba(168,85,247,0.25), 0 0 20px rgba(255,77,139,0.15);
+      animation: popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .emoji-row {
+      font-size: 2.2rem; margin-bottom: 0.75rem;
+      animation: bobble 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes bobble {
+      from { transform: translateY(0);    }
+      to   { transform: translateY(-8px); }
+    }
+
+    h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.6rem, 6vw, 2.1rem);
+      background: linear-gradient(135deg, var(--pink), var(--yellow), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.25;
+      margin-bottom: 0.6rem;
+    }
+
+    #main-screen > p {
+      color: rgba(255,255,255,0.6);
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+      margin-bottom: 1.8rem;
+      line-height: 1.5;
+    }
+
+    #yesBtn {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1rem, 4vw, 1.15rem);
+      font-weight: 900;
+      padding: 0.7rem 1.8rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      box-shadow: 0 8px 30px rgba(255,77,139,0.45);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: block;
+      margin: 0 auto;
+    }
+    #yesBtn:active { transform: scale(0.94); }
+
+    #noBtn {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1rem, 4vw, 1.15rem);
+      font-weight: 900;
+      padding: 0.7rem 1.8rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      background: linear-gradient(135deg, #1e1e3a, #2d2b52);
+      color: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+      position: absolute;
+      z-index: 20;
+      visibility: hidden;
+    }
+
+    #yes-screen {
+      display: none;
+      text-align: center;
+      padding: 2rem 1.5rem 2.5rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 2rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 100px rgba(255,215,61,0.3);
+      animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    }
+
+    #yes-screen h2 {
+      font-family: 'Pacifico', cursive;
+      font-size: clamp(1.5rem, 6vw, 2rem);
+      background: linear-gradient(135deg, var(--yellow), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+
+    #yes-screen p {
+      color: rgba(255,255,255,0.75);
+      font-size: clamp(0.85rem, 3.5vw, 1rem);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .party-image {
+      width: 100%;
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 40px rgba(168,85,247,0.4);
+      border: 3px solid rgba(255,255,255,0.1);
+      object-fit: cover;
+      height: 190px;
+      display: block;
+    }
+
+    .celebration-emoji {
+      font-size: 3rem; margin-bottom: 0.4rem; display: block;
+      animation: spinIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    }
+    @keyframes spinIn {
+      0%   { transform: rotate(-20deg) scale(0.4); opacity: 0; }
+      60%  { transform: rotate(10deg)  scale(1.2); }
+      100% { transform: rotate(0deg)   scale(1);   opacity: 1; }
+    }
+
+    .burst {
+      position: fixed; pointer-events: none; z-index: 999;
+      border-radius: 50%;
+      animation: burst 0.8s ease-out forwards;
+    }
+    @keyframes burst {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="confetti-bg" id="confetti"></div>
+
+<div id="scene">
+  <div id="main-screen">
+    <div class="emoji-row">🎉🥳🎊</div>
+    <h1>Was the Party Fun?</h1>
+    <p>We came. We drank. We (barely) remember.... ☕</p>
+    <button id="yesBtn" onclick="handleYes()">🎉 Yes!</button>
+  </div>
+
+  <button id="noBtn"
+    onmouseenter="runAway()"
+    ontouchstart="handleNoTouch(event)"
+    onclick="runAway()">😐 No</button>
+
+  <div id="yes-screen">
+    <span class="celebration-emoji">🥳</span>
+    <h2>YESSS! We Love That!</h2>
+    <p>That's what we like to hear! You're officially the life of the party. See you at the next one? 🎶🍾</p>
+    <img class="party-image"
+      src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80"
+      alt="Party celebration"
+      onerror="this.src='https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80'"
+    />
+  </div>
+</div>
+
+<script>
+  const confettiEl = document.getElementById('confetti');
+  const colors = ['#ff4d8b','#ffd93d','#a855f7','#06b6d4','#ff6b6b','#4ade80'];
+  for (let i = 0; i < 25; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    const sz = Math.random() * 16 + 5;
+    d.style.cssText = `
+      width:${sz}px;height:${sz}px;
+      left:${Math.random()*100}%;bottom:-20px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*8+6}s;
+      animation-delay:${Math.random()*8}s;`;
+    confettiEl.appendChild(d);
+  }
+
+  const noBtn = document.getElementById('noBtn');
+  const scene = document.getElementById('scene');
+  const card  = document.getElementById('main-screen');
+
+  let perimeterPoints = [];
+  let lastIdx = -1;
+  let dodged  = false;
+
+  function buildPerimeter() {
+    const cardRect  = card.getBoundingClientRect();
+    const sceneRect = scene.getBoundingClientRect();
+    const bw = noBtn.offsetWidth  || 88;
+    const bh = noBtn.offsetHeight || 44;
+    const GAP = 10;
+    const cTop    = cardRect.top    - sceneRect.top;
+    const cLeft   = cardRect.left   - sceneRect.left;
+    const cRight  = cLeft  + cardRect.width;
+    const cBottom = cTop   + cardRect.height;
+    const top    = cTop    - bh - GAP;
+    const left   = cLeft   - bw - GAP;
+    const right  = cRight  + GAP;
+    const bottom = cBottom + GAP;
+    const pts = [];
+    const steps = 20;
+    for (let i = 0; i <= steps; i++) {
+      pts.push({ x: left + (right - left + bw) * (i / steps), y: top });
+    }
+    for (let i = 1; i <= steps; i++) {
+      pts.push({ x: right, y: top + (bottom - top + bh) * (i / steps) });
+    }
+    for (let i = 1; i <= steps; i++) {
+      pts.push({ x: right - (right - left + bw) * (i / steps), y: bottom });
+    }
+    for (let i = 1; i < steps; i++) {
+      pts.push({ x: left, y: bottom - (bottom - top + bh) * (i / steps) });
+    }
+    const sw = scene.offsetWidth;
+    const sh = scene.offsetHeight;
+    perimeterPoints = pts.map(p => ({
+      x: Math.max(-bw, Math.min(sw, p.x)),
+      y: Math.max(-bh, Math.min(sh, p.y))
+    }));
+  }
+
+  function initNoBtn() {
+    buildPerimeter();
+    const yesRect   = document.getElementById('yesBtn').getBoundingClientRect();
+    const sceneRect = scene.getBoundingClientRect();
+    const bw = noBtn.offsetWidth;
+    const bh = noBtn.offsetHeight;
+    const x = (yesRect.left - sceneRect.left) + (yesRect.width  - bw) / 2;
+    const y = (yesRect.top  - sceneRect.top)  + (yesRect.height - bh) / 2;
+    noBtn.style.transition = 'none';
+    noBtn.style.left = x + 'px';
+    noBtn.style.top  = y + 'px';
+    noBtn.style.visibility = 'visible';
+  }
+
+  window.addEventListener('load', initNoBtn);
+  window.addEventListener('resize', () => {
+    buildPerimeter();
+    if (!dodged) initNoBtn();
+  });
+
+  function runAway() {
+    dodged = true;
+    buildPerimeter();
+    if (perimeterPoints.length === 0) return;
+    let idx, tries = 0;
+    do {
+      idx = Math.floor(Math.random() * perimeterPoints.length);
+      tries++;
+    } while (Math.abs(idx - lastIdx) < 5 && tries < 20);
+    lastIdx = idx;
+    const pt = perimeterPoints[idx];
+    noBtn.style.transition = 'left 0.08s ease-out, top 0.08s ease-out';
+    noBtn.style.left = pt.x + 'px';
+    noBtn.style.top  = pt.y + 'px';
+  }
+
+  function handleNoTouch(e) {
+    e.preventDefault();
+    runAway();
+  }
+
+  function handleYes() {
+    const cx = window.innerWidth  / 2;
+    const cy = window.innerHeight / 2;
+    for (let i = 0; i < 36; i++) {
+      const p = document.createElement('div');
+      p.className = 'burst';
+      const sz    = Math.random() * 14 + 7;
+      const angle = Math.random() * 2 * Math.PI;
+      const dist  = Math.random() * 220 + 60;
+      p.style.cssText = `
+        width:${sz}px;height:${sz}px;
+        left:${cx}px;top:${cy}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        --tx:${Math.cos(angle)*dist}px;
+        --ty:${Math.sin(angle)*dist}px;`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 900);
+    }
+    setTimeout(() => {
+      card.style.display = 'none';
+      noBtn.style.display = 'none';
+      document.getElementById('yes-screen').style.display = 'block';
+    }, 200);
+  }
+</script>
+</body>
+</html>
